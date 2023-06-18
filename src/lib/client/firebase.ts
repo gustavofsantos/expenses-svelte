@@ -1,7 +1,9 @@
 // Import the functions you need from the SDKs you need
+import type { FirebaseApp } from "firebase/app"
 import { initializeApp, getApps } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore"
 import { PUBLIC_apiKey, PUBLIC_authDomain, PUBLIC_projectId, PUBLIC_storageBucket, PUBLIC_messagingSenderId, PUBLIC_appId, PUBLIC_measurementId } from "$env/static/public"
 
 const firebaseConfig = {
@@ -14,7 +16,7 @@ const firebaseConfig = {
   measurementId: PUBLIC_measurementId
 };
 
-let app
+let app: FirebaseApp | undefined
 
 // Initialize Firebase
 if (getApps().length === 0) { 
@@ -23,4 +25,5 @@ if (getApps().length === 0) {
   
 export const analytics = getAnalytics(app);
 export const auth = getAuth(app);
+export const db = getFirestore(app as FirebaseApp);
 
