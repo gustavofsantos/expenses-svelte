@@ -13,7 +13,6 @@
   let date = "";
   let errors: Map<string, ZodIssue> | null = null;
 
-
   async function handleSubmit() {
     const validation = NewEntrySchema.safeParse({
       description,
@@ -28,6 +27,9 @@
   }
 </script>
 
+<svelte:head>
+  <title>New entry</title>
+</svelte:head>
 
 <h1>New entry</h1>
 
@@ -57,4 +59,5 @@
   </label>
 
   <button type="submit">Save</button>
+  <a href="/">Cancel</a>
 </form>
