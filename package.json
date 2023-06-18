@@ -36,6 +36,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"firebase": "^9.22.2",
 		"zod": "^3.21.4"
 	}
 }
