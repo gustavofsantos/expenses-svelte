@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { enhance } from "$app/forms";
+	import { enhance } from '$app/forms';
 
 	export let form;
 </script>
@@ -36,5 +36,5 @@
 
 	<button type="submit">Register</button>
 	<hr />
-	<a href="/auth/login">Login</a>
+	<a href="/login">Login</a>
 </form>

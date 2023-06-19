@@ -49,6 +49,6 @@ export const actions: Actions = {
 			});
 		}
 
-		throw redirect(300, '/auth/login?message=Registration successful');
+		throw redirect(300, '/login?message=Registration successful');
 	}
 };
