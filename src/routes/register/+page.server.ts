@@ -1,8 +1,8 @@
+import { db } from '$lib/db';
+import { fail, redirect } from '@sveltejs/kit';
+import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import type { Actions } from './$types';
-import { fail, redirect } from '@sveltejs/kit';
-import { db } from '$lib/db';
-import bcrypt from 'bcryptjs';
 
 const RegistrationDataSchema = z.object({
 	name: z.string().min(3),
@@ -34,10 +34,10 @@ export const actions: Actions = {
 					name: name as string,
 					email: email as string,
 					password: {
-            create: {
-              hashedPassword
-            }
-          }
+						create: {
+							hashedPassword
+						}
+					}
 				}
 			});
 		} catch (error) {
@@ -49,8 +49,6 @@ export const actions: Actions = {
 			});
 		}
 
-
-    throw redirect(300, "/login");
-		return { success: true };
+		throw redirect(300, '/auth/login?message=Registration successful');
 	}
 };

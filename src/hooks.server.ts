@@ -1,46 +1,23 @@
-import { SvelteKitAuth } from "@auth/sveltekit"
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import Credentials from "@auth/core/providers/credentials"
-import { z } from "zod"
-import { db } from "$lib/db"
-import bcrypt from "bcryptjs"
+import { AUTH_SECRET } from '$env/static/private';
+import type { Handle } from '@sveltejs/kit';
+import jwt from 'jsonwebtoken';
 
-const CredentialsSchema = z.object({
-  email: z.string().email(),
-  password: z.string()
-})
+const protectedPaths = ['/'];
 
-export const handle = SvelteKitAuth({
-  adapter: PrismaAdapter(db),
-  providers: [
-    Credentials({
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
-      },
-      async authorize(credentials, _request) {
-        console.log("credentials", credentials)
-        const email = credentials.email as string
-        const password = credentials.password as string
-        const validation = CredentialsSchema.safeParse({ email, password })
-        if (!validation.success) {
-          return null
-        }
+export const handle: Handle = async ({ event, resolve }) => {
+	const authorizationTokenCookie = event.cookies.get('Authorization');
+	if (authorizationTokenCookie) {
+		const token = authorizationTokenCookie.split(' ')[1];
+		if (token) {
+			try {
+				const decoded = jwt.verify(token, AUTH_SECRET);
+				event.locals.user = decoded;
+			} catch (error) {
+				event.locals.user = null;
+				console.error(error);
+			}
+		}
+	}
 
-        const user = await db.user.findUnique({
-          where: { email },
-          include: { password: true }
-        })
-        if (!user) {
-          return null
-        }
-
-        if (bcrypt.compareSync(password, user.password!.hashedPassword)) {
-          return { id: user.id, email: user.email, name: user.name }
-        }
-
-        return null
-      }
-    })
-  ]
-})
+	return await resolve(event);
+};
