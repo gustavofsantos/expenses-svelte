@@ -1,9 +1,6 @@
 <script lang="ts">
   import { z } from "zod";
-  import { signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from "firebase/auth";
-	import { auth } from "$lib/client/firebase";
 	import { goto } from "$app/navigation";
-	import { authUser } from "$lib/client/authStore";
 
   const LoginDataSchema = z.object({
     email: z.string().email(),
@@ -25,11 +22,6 @@
         return;
       }
 
-      const user = await signInWithEmailAndPassword(auth, email, password);
-      await setPersistence(auth, browserLocalPersistence)
-
-      $authUser = { uid: user.user.uid, email: user.user.email as string };
-      goto("/");
     } catch (e) {
       console.error(e);
     }
@@ -61,4 +53,6 @@
   </label>
 
   <button type="submit">Login</button>
+  <hr />
+  <a href="/register">Registration</a>
 </form>

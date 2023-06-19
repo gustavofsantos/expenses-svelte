@@ -1,7 +1,5 @@
 <script lang="ts">
   import { z } from "zod";
-  import { createUserWithEmailAndPassword } from "firebase/auth";
-	import { auth } from "$lib/client/firebase";
 	import { goto } from "$app/navigation";
 
   const RegistrationSchema = z.object({
@@ -12,26 +10,14 @@
   let email = "";
   let password = "";
   let formErrors = new Map<string, string>();
-  let registrationError: string | null = null;
 
   async function handleSubmit() {
-    try {
-      const validation = RegistrationSchema.safeParse({
-        email,
-        password,
-      });
-      if (!validation.success) {
-        formErrors = new Map(validation.error.issues.map((error) => [error.path.join("."), error.message]));
-        return;
-      }
-
-      await createUserWithEmailAndPassword(auth, email, password);
-      goto("/login?message=Registration successful");
-    } catch (e) {
-      console.error(e);
-    }
   }
 </script>
+
+<svelte:head>
+  <title>Registration</title>
+</svelte:head>
 
 <h1>Registration</h1>
 
@@ -53,4 +39,6 @@
   </label>
 
   <button type="submit">Register</button>
+  <hr />
+  <a href="/login">Login</a>
 </form>

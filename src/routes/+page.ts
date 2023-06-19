@@ -1,14 +1,23 @@
-import type { Entry } from "../lib/entry/model"
+// import type { Entry } from "../lib/entry/model"
 
-export type LoadData = {
-  entries: Array<Entry>
-}
+export const ssr = false
 
-export async function load(): Promise<LoadData> {
-  const entries: Entry[] = [
-    { id: "1", value: 1, description: "one", date: new Date() },
-    { id: "2", value: 2, description: "two", date: new Date() },
-  ]
+// export type LoadData = {
+//   entries: Array<Entry>
+// }
 
-  return { entries }
-}
+//export async function load(): Promise<LoadData> {
+//  // const unsubscribe = authUser.subscribe((user) => {
+//  //   console.log("user", user)
+//  //   if (!user) {
+//  //     throw redirect(302, "/login")
+//  //   }
+//  // })
+//  // unsubscribe()
+//  //
+//  const uid = "22mtCcCRggVvgTJGH8JObdtf14N2"
+//  // const entries: Array<Entry> = await getEntries(uid)
+//  const entries: Array<Entry> = []
+
+//  return { entries }
+//}

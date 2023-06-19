@@ -1,6 +1,6 @@
 <script lang="ts">
   import { z} from "zod";
-  import type { ZodIssue } from "zod"
+  import type { ZodIssue } from "zod";
 
   const NewEntrySchema = z.object({
     description: z.string().nonempty(),
@@ -14,6 +14,7 @@
   let errors: Map<string, ZodIssue> | null = null;
 
   async function handleSubmit() {
+    /**
     const validation = NewEntrySchema.safeParse({
       description,
       value,
@@ -24,6 +25,7 @@
       errors = new Map(validation.error.issues.map((error) => [error.path.join("."), error]));
       return;
     }
+    */
   }
 </script>
 
@@ -59,5 +61,4 @@
   </label>
 
   <button type="submit">Save</button>
-  <a href="/">Cancel</a>
 </form>
