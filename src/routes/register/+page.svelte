@@ -1,44 +1,40 @@
 <script lang="ts">
-  import { z } from "zod";
-	import { goto } from "$app/navigation";
+  import { enhance } from "$app/forms";
 
-  const RegistrationSchema = z.object({
-    email: z.string().email(),
-    password: z.string().min(8),
-  });
-
-  let email = "";
-  let password = "";
-  let formErrors = new Map<string, string>();
-
-  async function handleSubmit() {
-  }
+	export let form;
 </script>
 
 <svelte:head>
-  <title>Registration</title>
+	<title>Registration</title>
 </svelte:head>
 
 <h1>Registration</h1>
 
-<form on:submit|preventDefault={handleSubmit}>
-  <label for="email-input">
-    <span>Email</span>
-    <input type="email" id="email-input" bind:value={email} />
-    {#if formErrors.has("email")}
-      <p class="text-red-500">{formErrors.get("email")}</p>
-    {/if}
-  </label>
+<form method="POST" use:enhance>
+	<label for="name-input">
+		<span>Name</span>
+		<input type="text" id="name-input" name="name" />
+		{#if form?.error}
+			<p class="text-red-500">Unable to register</p>
+		{/if}
+	</label>
+	<label for="email-input">
+		<span>Email</span>
+		<input type="email" id="email-input" name="email" />
+		{#if form?.error}
+			<p class="text-red-500">Unable to register</p>
+		{/if}
+	</label>
 
-  <label for="password-input">
-    <span>Password</span>
-    <input type="password" id="password-input" bind:value={password} />
-    {#if formErrors.has("password")}
-      <p class="text-red-500">{formErrors.get("password")}</p>
-    {/if}
-  </label>
+	<label for="password-input">
+		<span>Password</span>
+		<input type="password" id="password-input" name="password" />
+		{#if form?.error}
+			<p class="text-red-500">Unable to register</p>
+		{/if}
+	</label>
 
-  <button type="submit">Register</button>
-  <hr />
-  <a href="/login">Login</a>
+	<button type="submit">Register</button>
+	<hr />
+	<a href="/auth/login">Login</a>
 </form>
