@@ -1,23 +1,11 @@
-// import type { Entry } from "../lib/entry/model"
+import { redirect } from "@sveltejs/kit";
+import type { PageLoad } from "./$types";
 
-export const ssr = false
+export const load: PageLoad = async (request) => {
+  const { session } = await request.parent()
+  if (!session?.user) {
+    throw redirect(302, "/login?message=You must be logged in to view this page.")
+  }
 
-// export type LoadData = {
-//   entries: Array<Entry>
-// }
-
-//export async function load(): Promise<LoadData> {
-//  // const unsubscribe = authUser.subscribe((user) => {
-//  //   console.log("user", user)
-//  //   if (!user) {
-//  //     throw redirect(302, "/login")
-//  //   }
-//  // })
-//  // unsubscribe()
-//  //
-//  const uid = "22mtCcCRggVvgTJGH8JObdtf14N2"
-//  // const entries: Array<Entry> = await getEntries(uid)
-//  const entries: Array<Entry> = []
-
-//  return { entries }
-//}
+  return {}
+}
