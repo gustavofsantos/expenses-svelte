@@ -3,6 +3,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "@auth/core/providers/credentials"
 import { z } from "zod"
 import { db } from "$lib/db"
+import bcrypt from "bcryptjs"
 
 const CredentialsSchema = z.object({
   email: z.string().email(),
@@ -19,12 +20,26 @@ export const handle = SvelteKitAuth({
       },
       async authorize(credentials, _request) {
         console.log("credentials", credentials)
-        const validation = CredentialsSchema.safeParse(credentials)
+        const email = credentials.email as string
+        const password = credentials.password as string
+        const validation = CredentialsSchema.safeParse({ email, password })
         if (!validation.success) {
           return null
         }
 
-        return { id: "123", email: "user@email" }
+        const user = await db.user.findUnique({
+          where: { email },
+          include: { password: true }
+        })
+        if (!user) {
+          return null
+        }
+
+        if (bcrypt.compareSync(password, user.password!.hashedPassword)) {
+          return { id: user.id, email: user.email, name: user.name }
+        }
+
+        return null
       }
     })
   ]

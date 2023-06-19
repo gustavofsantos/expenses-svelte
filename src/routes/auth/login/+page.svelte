@@ -1,10 +1,11 @@
 <script lang="ts">
   import { z } from "zod";
+  import { signIn } from "@auth/sveltekit/client"
 	import { goto } from "$app/navigation";
 
   const LoginDataSchema = z.object({
     email: z.string().email(),
-    password: z.string().min(8),
+    password: z.string(),
   });
 
   let email = "";
@@ -22,6 +23,7 @@
         return;
       }
 
+      await signIn("credentials", { email, password })
     } catch (e) {
       console.error(e);
     }
@@ -38,7 +40,7 @@
 <form on:submit|preventDefault={handleSubmit}>
   <label for="email-input">
     <span>Email</span>
-    <input type="email" id="email-input" bind:value={email} />
+    <input type="email" id="email-input" required="true" bind:value={email} />
     {#if formErrors.has("email")}
       <p class="text-red-500">{formErrors.get("email")}</p>
     {/if}
@@ -46,7 +48,7 @@
 
   <label for="password-input">
     <span>Password</span>
-    <input type="password" id="password-input" bind:value={password} />
+    <input type="password" id="password-input" required="true" bind:value={password} />
     {#if formErrors.has("password")}
       <p class="text-red-500">{formErrors.get("password")}</p>
     {/if}
