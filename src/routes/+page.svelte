@@ -7,10 +7,20 @@
 			style: 'currency',
 			currency: 'BRL'
 		}).format(entry.value / 100),
+    rawValue: entry.value,
 		date: new Date(entry.date).toLocaleDateString('pt-BR')
 	}));
+  $: totalExpenses = entries.filter((entry) => entry.type === 'EXPENSE').reduce((acc, entry) => acc + entry.rawValue, 0);
+  $: totalIncomes = entries.filter((entry) => entry.type === 'INCOME').reduce((acc, entry) => acc + entry.rawValue, 0);
+  $: balance = totalIncomes - totalExpenses;
 
-	$: console.log(entries);
+  function formatIntegerToMoney(value: number) {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value / 100);
+  }
+
 </script>
 
 <svelte:head>
@@ -23,11 +33,32 @@
 	<a href="/entries/new">New entry</a>
 </section>
 
+
+<section class="w-full my-4 ">
+  <details>
+    <summary>Stats</summary>
+    <div class="grid grid-cols-3 gap-2 w-full">
+      <div>
+        <h2>Expenses</h2>
+        <p>{formatIntegerToMoney(totalExpenses)}</p>
+      </div>
+      <div>
+        <h2>Incomes</h2>
+        <p>{formatIntegerToMoney(totalIncomes)}</p>
+      </div>
+      <div>
+        <h2>Balance</h2>
+        <p>{formatIntegerToMoney(balance)}</p>
+      </div>
+    </div>
+  </details>
+</section>
+
 <section>
 	{#if entries.length > 0}
-		<ul class="divide-y divide-gray-400">
+		<ul class="divide-y divide-gray-300">
 			{#each entries as entry}
-				<li>
+				<li class="py-2">
 					<div class="flex justify-between items-center">
 						<div class="flex space-x-2 items-center">
 							{#if entry.type === 'EXPENSE'}
@@ -37,7 +68,7 @@
 							{:else}
 								<span class="bg-gray-500 h-2 w-2 rounded-full" />
 							{/if}
-							<strong>{entry.value}</strong>
+							<strong><a href={`/entries/${entry.id}`}>{entry.value}</a></strong>
 						</div>
 						<small>{entry.date}</small>
 					</div>
