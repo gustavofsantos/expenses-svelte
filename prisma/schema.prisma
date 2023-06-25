@@ -22,17 +22,30 @@ model Entry {
   description String?
   type        EntryType @default(EXPENSE)
   date        DateTime  @default(now())
+  categories  CategoryOnEntry[]
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Category {
-  id String @id @default(cuid())
-  userId String
-  name String
+  id        String @id @default(cuid())
+  userId    String
+  name      String
   createdAt DateTime @default(now())
+  entries   CategoryOnEntry[]
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CategoryOnEntry {
+  entryId     String
+  categoryId  String
+  createdAt   DateTime @default(now())
+
+  entry       Entry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([entryId, categoryId])
 }
 
 model User {
