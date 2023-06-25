@@ -1,5 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit';
-import type { Actions } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 
 import { db } from '$lib/db';
 import { EntryType } from '@prisma/client';
@@ -17,22 +17,38 @@ const NewEntrySchema = z.object({
 	date: z
 		.string()
 		.regex(/^\d{4}-\d{2}-\d{2}$/)
-		.optional()
+		.optional(),
+	categories: z.array(z.string()).optional()
 });
+
+export const load: PageServerLoad = async (event) => {
+	const user = event.locals.user;
+	if (!user) {
+		throw redirect(302, '/login?message=You must be logged in to view this page');
+	}
+
+	const categories = await db.category.findMany({
+		where: { userId: user.id },
+	});
+
+	return { categories };
+};
 
 export const actions: Actions = {
 	default: async (event) => {
 		const formData = await event.request.formData();
 		const value = Number(formData.get('value'));
 		const description = formData.get('description');
-		const date = formData.get('date') || undefined;
+		const date = (formData.get('date') as string) || undefined;
 		const type = (formData.get('type') as string | undefined) || undefined;
+		const categories = formData.getAll('categories') as string[];
 
 		const validation = NewEntrySchema.safeParse({
 			description,
 			value,
 			date,
-			type
+			type,
+			categories
 		});
 		if (!validation.success) {
 			return fail(400, {
@@ -40,6 +56,7 @@ export const actions: Actions = {
 				description,
 				date,
 				type,
+				categories,
 				error: 'Invalid data',
 				errors: validation.error.flatten()
 			});
@@ -50,9 +67,14 @@ export const actions: Actions = {
 			data: {
 				description: description as string,
 				value: value as number,
-				date: date as string,
+				date: new Date(date || new Date()),
 				type: type?.toUpperCase() as EntryType,
-				userId: user!.id
+				userId: user!.id,
+				categories: {
+					createMany: {
+						data: categories.map((categoryId) => ({ categoryId }))
+					}
+				}
 			}
 		});
 

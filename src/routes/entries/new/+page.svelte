@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 
 	export let form;
+  export let data;
 </script>
 
 <svelte:head>
@@ -45,6 +46,18 @@
 			<p class="text-red-500">{form?.errors.fieldErrors.date}</p>
 		{/if}
 	</label>
+
+  <label for="categories-input">
+    <span>Categories</span>
+    <select id="categories-input" name="categories" multiple>
+      {#each data.categories as category}
+        <option value={category.id}>{category.name}</option>
+      {/each}
+    </select>
+    {#if form?.errors.fieldErrors.categories}
+      <p class="text-red-500">{form?.errors.fieldErrors.categories}</p>
+    {/if}
+  </label>
 
 	<button type="submit">Save</button>
 </form>
