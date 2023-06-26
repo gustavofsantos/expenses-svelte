@@ -1,4 +1,18 @@
 services:
+  app:
+    build:
+      context: .
+      args:
+        - DATABASE_URL=postgresql://app:app@localhost:5432/app_db
+        - AUTH_SECRET=4627b9e07b61454051965fe3b5370571d5102b47a7abe62553185d60cff920ac
+    environment:
+      - DATABASE_URL=postgresql://app:app@db:5432/app_db
+      - AUTH_SECRET=4627b9e07b61454051965fe3b5370571d5102b47a7abe62553185d60cff920ac
+    volumes:
+      - app-data:/app
+    depends_on:
+      - db
+
   db:
     image: postgres:15-alpine
     ports:
@@ -22,3 +36,4 @@ services:
 
 volumes:
   database-data:
+  app-data:
