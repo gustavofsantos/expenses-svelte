@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build",
+		"build": "prisma generate && vite build",
 		"preview": "vite preview",
 		"test": "playwright test",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -43,6 +43,7 @@
 		"@auth/prisma-adapter": "^1.0.0",
 		"@auth/sveltekit": "^0.3.3",
 		"@prisma/client": "4.15.0",
+		"@sveltejs/adapter-node": "^1.2.4",
 		"bcryptjs": "^2.4.3",
 		"date-fns": "^2.30.0",
 		"jsonwebtoken": "^9.0.0",
