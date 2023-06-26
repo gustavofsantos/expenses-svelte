@@ -6,9 +6,10 @@
 	export let data;
 
   let value = data.entry?.value;
-  let type = data.entry?.type.toLowerCase();
+  let type = data.entry?.type?.toLowerCase();
   let description = data.entry?.description;
   let date = data.entry?.date;
+  let categories = data.entry?.categories;
 
   $: formattedDate = date ? format(date, 'yyyy-MM-dd') : undefined
 </script>
@@ -18,6 +19,10 @@
 </svelte:head>
 
 <h1>Entry #{data.entry?.id}</h1>
+
+<section>
+  <a href="/">Back to entries</a>
+</section>
 
 <form method="POST" action="?/update" use:enhance>
 	<label for="value-input">
@@ -54,6 +59,20 @@
 			<p class="text-red-500">{form?.errors.fieldErrors.date}</p>
 		{/if}
 	</label>
+
+  {#if data.categories}
+    <label for="categories-input">
+      <span>Categories</span>
+      <select id="categories-input" name="categories" bind:value={categories} multiple>
+        {#each data.categories as category}
+          <option value={category.id} selected>{category.name}</option>
+        {/each}
+      </select>
+      {#if form?.errors?.fieldErrors.categories}
+        <p class="text-red-500">{form?.errors.fieldErrors.categories}</p>
+      {/if}
+    </label>
+  {/if}
 
 	<button type="submit">Save</button>
 </form>
