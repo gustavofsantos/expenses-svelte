@@ -118,17 +118,6 @@ export const actions: Actions = {
 			})
 		]);
 
-		const entry = await db.entry.findFirst({
-			where: { id: entryId, userId: event.locals.user!.id },
-			include: {
-				categories: {
-					include: {
-						category: true
-					}
-				}
-			}
-		});
-
     throw redirect(302, `/`);
 	},
 	delete: async (event) => {
