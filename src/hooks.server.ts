@@ -2,8 +2,6 @@ import { AUTH_SECRET } from '$env/static/private';
 import type { Handle } from '@sveltejs/kit';
 import jwt from 'jsonwebtoken';
 
-const protectedPaths = ['/'];
-
 export const handle: Handle = async ({ event, resolve }) => {
 	const authorizationTokenCookie = event.cookies.get('Authorization');
 	if (authorizationTokenCookie) {
