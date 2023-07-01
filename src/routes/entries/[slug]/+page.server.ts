@@ -1,50 +1,27 @@
-import { db } from '$lib/db';
-import { EntryType } from '@prisma/client';
+import { ENTRIES_FILE_PATH } from '$env/static/private';
+import { EntriesService } from '$lib/entries-service';
 import { fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';
 
-const entryTypes = [EntryType.EXPENSE.toLowerCase(), EntryType.INCOME.toLowerCase()];
-
 const NewEntrySchema = z.object({
 	description: z.string().optional(),
 	value: z.number().int().positive(),
-	type: z
-		.string()
-		.refine((x) => entryTypes.includes(x))
-		.optional(),
+	type: z.enum(['income', 'expense']).optional().default('expense'),
 	date: z
-		.string()
-		.regex(/^\d{4}-\d{2}-\d{2}$/)
-		.optional(),
-	categories: z.array(z.string()).optional()
+		.date()
+		.optional()
+		.default(() => new Date())
 });
+
+const entriesService = new EntriesService(ENTRIES_FILE_PATH);
 
 export const load: PageServerLoad = async (event) => {
 	const entryId = event.params.slug;
-	const entry = await db.entry.findFirst({
-		where: { id: entryId, userId: event.locals.user!.id },
-		include: {
-			categories: {
-				include: {
-					category: true
-				}
-			}
-		}
-	});
+	const entry = await entriesService.findById(entryId);
 	if (!entry) throw fail(404);
 
-	const categories = await db.category.findMany({
-		where: { userId: event.locals.user!.id }
-	});
-
-	return {
-		categories,
-		entry: {
-			...entry,
-			categories: entry.categories.map((category) => category.category.id)
-		}
-	};
+	return { entry: JSON.parse(JSON.stringify(entry)) };
 };
 
 export const actions: Actions = {
@@ -52,17 +29,15 @@ export const actions: Actions = {
 		const entryId = event.params.slug;
 		const formData = await event.request.formData();
 		const value = Number(formData.get('value'));
-		const description = formData.get('description');
-		const date = formData.get('date') || undefined;
+		const description = formData.get('description') as string;
+		const date = new Date((formData.get('date') as string) || Date.now());
 		const type = (formData.get('type') as string | undefined) || undefined;
-		const categories = formData.getAll('categories') as string[];
 
 		const validation = NewEntrySchema.safeParse({
 			description,
 			value,
 			date,
-			type,
-			categories
+			type
 		});
 		if (!validation.success) {
 			return fail(400, {
@@ -70,61 +45,18 @@ export const actions: Actions = {
 				description,
 				date,
 				type,
-				categories,
 				error: 'Invalid data',
 				errors: validation.error.flatten()
 			});
 		}
 
-		const currentEntry = await db.entry.findUnique({
-			where: { id: entryId },
-			include: {
-				categories: {
-					include: {
-						category: true
-					}
-				}
-			}
-		});
+		await entriesService.update(entryId, validation.data);
 
-		const categoriesToAdd = categories.filter(
-			(category) =>
-				!currentEntry?.categories.find((entryCategory) => entryCategory.category.id === category)
-		);
-		const categoriesToRemove = currentEntry?.categories
-			.filter((entryCategory) => !categories.includes(entryCategory.category.id))
-			.map((c) => c.categoryId);
-
-		await db.$transaction([
-			db.entry.updateMany({
-				where: { id: entryId, userId: event.locals.user!.id },
-				data: {
-					value,
-					description: description as string,
-					date: date ? new Date(date as string) : undefined,
-					type: type?.toUpperCase() as EntryType
-				}
-			}),
-			db.categoryOnEntry.createMany({
-				data: categoriesToAdd.map((category) => ({ categoryId: category, entryId }))
-			}),
-			db.categoryOnEntry.deleteMany({
-				where: {
-					entryId,
-					categoryId: {
-						in: categoriesToRemove
-					}
-				}
-			})
-		]);
-
-    throw redirect(302, `/`);
+		throw redirect(302, `/`);
 	},
 	delete: async (event) => {
 		const entryId = event.params.slug;
-		await db.entry.deleteMany({
-			where: { id: entryId, userId: event.locals.user!.id }
-		});
+		await entriesService.delete(entryId);
 
 		throw redirect(302, '/?message=Delete successfully');
 	}
