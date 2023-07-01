@@ -3,6 +3,11 @@ import * as crypto from 'node:crypto';
 
 import { EntrySchema, type Entry } from '../models/entry';
 
+export type LoadFilter = {
+	fromDate?: Date;
+	toDate?: Date;
+};
+
 export class EntriesService {
 	constructor(private readonly entriesFilePath: string) {}
 
@@ -44,9 +49,17 @@ export class EntriesService {
 		return entries.find((entry) => entry.id === id);
 	}
 
-	async loadAll(): Promise<Entry[]> {
+	async loadAll(filter?: LoadFilter): Promise<Entry[]> {
 		const contents = await fs.readFile(this.entriesFilePath, 'utf-8');
 		const parsedFile = JSON.parse(contents) as { entries: Entry[] };
+		if (filter) {
+			return parsedFile.entries.filter((entry) => {
+				if (filter.fromDate && new Date(entry.date) < filter.fromDate) return false;
+				if (filter.toDate && new Date(entry.date) > filter.toDate) return false;
+				return true;
+			});
+		}
+
 		return parsedFile.entries;
 	}
 

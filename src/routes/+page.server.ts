@@ -7,7 +7,10 @@ export const load: PageServerLoad = async (event) => {
 	const toDate = event.url.searchParams.get('toDate') || undefined;
 
 	const entriesServices = new EntriesService(ENTRIES_FILE_PATH);
-	const entries = await entriesServices.loadAll();
+	const entries = await entriesServices.loadAll({
+		fromDate: fromDate ? new Date(fromDate) : undefined,
+		toDate: toDate ? new Date(toDate) : undefined
+	});
 
 	return { entries };
 };
