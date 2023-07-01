@@ -3,37 +3,13 @@ services:
     build:
       context: .
       args:
-        - DATABASE_URL=postgresql://app:app@localhost:5432/app_db
-        - AUTH_SECRET=4627b9e07b61454051965fe3b5370571d5102b47a7abe62553185d60cff920ac
+        - ENTRIES_FILE_PATH="~/notes/expenses.json"
     environment:
-      - DATABASE_URL=postgresql://app:app@db:5432/app_db
-      - AUTH_SECRET=4627b9e07b61454051965fe3b5370571d5102b47a7abe62553185d60cff920ac
+      - ENTRIES_FILE_PATH="~/notes/expenses.json"
+    ports:
+      - 3000:3000
     volumes:
       - app-data:/app
-    depends_on:
-      - db
-
-  db:
-    image: postgres:15-alpine
-    ports:
-      - '5432:5432'
-    environment:
-      POSTGRES_PASSWORD: app
-      POSTGRES_USER: app
-      POSTGRES_DB: app_db
-    volumes:
-      - database-data:/var/lib/postgresql/data
-
-  pg_admin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "user@email.com"
-      PGADMIN_DEFAULT_PASSWORD: "password"
-    ports:
-      - '16543:80'
-    depends_on:
-      - db
 
 volumes:
-  database-data:
   app-data:

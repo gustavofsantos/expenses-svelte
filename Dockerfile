@@ -1,23 +1,25 @@
 FROM node:lts-slim AS base
 
-ARG AUTH_SECRET
-ENV AUTH_SECRET=$AUTH_SECRET
-
-ARG DATABASE_URL
-ENV DATABASE_URL=$DATABASE_URL
-
-RUN apt-get update -y && apt-get install -y openssl
 WORKDIR /app
+
+# Install pnpm globally
 RUN npm install -g pnpm
+
 COPY package.json ./
 COPY pnpm-lock.yaml ./
 COPY .npmrc ./
+
+# Install dependencies
 RUN pnpm install --frozen-lockfile
+
 COPY . .
 
 ENV NODE_ENV=production
+
+ARG ENTRIES_FILE_PATH
+ENV ENTRIES_FILE_PATH=ENTRIES_FILE_PATH
+
 RUN pnpm build
-RUN pnpm exec prisma migrate deploy
 RUN pnpm prune --prod --no-optional
 
 EXPOSE 3000
