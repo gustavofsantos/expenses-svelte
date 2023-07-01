@@ -19,7 +19,7 @@ export const actions: Actions = {
 		const formData = await event.request.formData();
 		const value = Number(formData.get('value'));
 		const description = formData.get('description');
-		const date = new Date((formData.get('date') as string) || Date.now());
+		const date = formData.get('date') ? new Date(formData.get('date') as string) : undefined;
 		const type = (formData.get('type') as string | undefined) || undefined;
 
 		const validation = NewEntrySchema.safeParse({

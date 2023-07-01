@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { format } from 'date-fns';
 
 	export let data;
 	let message = $page.url.searchParams.get('message');
@@ -13,7 +14,7 @@
 			currency: 'BRL'
 		}).format(entry.value / 100),
 		rawValue: entry.value,
-		date: new Date(entry.date).toLocaleDateString('pt-BR')
+		date: format(new Date(entry.date), 'dd/MM/yyyy')
 	}));
 	$: totalExpenses = entries
 		.filter((entry) => entry.type === 'expense')

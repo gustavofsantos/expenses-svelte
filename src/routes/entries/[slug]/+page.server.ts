@@ -4,14 +4,11 @@ import { fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';
 
-const NewEntrySchema = z.object({
+const UpdateEntrySchema = z.object({
 	description: z.string().optional(),
 	value: z.number().int().positive(),
-	type: z.enum(['income', 'expense']).optional().default('expense'),
-	date: z
-		.date()
-		.optional()
-		.default(() => new Date())
+	type: z.enum(['income', 'expense']),
+	date: z.date()
 });
 
 const entriesService = new EntriesService(ENTRIES_FILE_PATH);
@@ -30,10 +27,12 @@ export const actions: Actions = {
 		const formData = await event.request.formData();
 		const value = Number(formData.get('value'));
 		const description = formData.get('description') as string;
-		const date = new Date((formData.get('date') as string) || Date.now());
+		const date = formData.get('date') ? new Date(formData.get('date') as string) : undefined;
 		const type = (formData.get('type') as string | undefined) || undefined;
 
-		const validation = NewEntrySchema.safeParse({
+		console.log({ value, description, date, type });
+
+		const validation = UpdateEntrySchema.safeParse({
 			description,
 			value,
 			date,
