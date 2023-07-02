@@ -56,16 +56,20 @@
 	<details>
 		<summary>Filter</summary>
 		<form method="GET">
-			<label for="from-date-input">
-				<span>From</span>
-				<input type="date" id="from-date-input" name="fromDate" value={fromDate} />
-			</label>
-			<label for="to-date-input">
-				<span>To</span>
-				<input type="date" id="to-date-input" name="toDate" value={toDate} />
-			</label>
-			<button type="submit">Filter</button>
-			<button type="reset">Clear</button>
+			<div class="grid grid-cols-2 gap-2">
+				<label for="from-date-input">
+					<span>From</span>
+					<input type="date" id="from-date-input" name="fromDate" value={fromDate} />
+				</label>
+				<label for="to-date-input">
+					<span>To</span>
+					<input type="date" id="to-date-input" name="toDate" value={toDate} />
+				</label>
+			</div>
+			<div class="space-x-2">
+				<button type="submit">Filter</button>
+				<button type="reset">Clear</button>
+			</div>
 		</form>
 	</details>
 </section>
