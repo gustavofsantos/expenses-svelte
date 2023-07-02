@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { format } from 'date-fns';
+	import Stats from '../components/stats.svelte';
 
 	export let data;
 	let message = $page.url.searchParams.get('message');
@@ -23,13 +24,6 @@
 		.filter((entry) => entry.type === 'income')
 		.reduce((acc, entry) => acc + entry.rawValue, 0);
 	$: balance = totalIncomes - totalExpenses;
-
-	function formatIntegerToMoney(value: number) {
-		return new Intl.NumberFormat('pt-BR', {
-			style: 'currency',
-			currency: 'BRL'
-		}).format(value / 100);
-	}
 
 	function clearMessage() {
 		message = null;
@@ -58,39 +52,25 @@
 </section>
 
 <section id="filter">
-	<h3>Filter</h3>
-	<form method="GET">
-		<label for="from-date-input">
-			<span>From</span>
-			<input type="date" id="from-date-input" name="fromDate" value={fromDate} />
-		</label>
-		<label for="to-date-input">
-			<span>To</span>
-			<input type="date" id="to-date-input" name="toDate" value={toDate} />
-		</label>
-		<button type="submit">Filter</button>
-		<button type="reset">Clear</button>
-	</form>
+	<details>
+		<summary>Filter</summary>
+		<form method="GET">
+			<label for="from-date-input">
+				<span>From</span>
+				<input type="date" id="from-date-input" name="fromDate" value={fromDate} />
+			</label>
+			<label for="to-date-input">
+				<span>To</span>
+				<input type="date" id="to-date-input" name="toDate" value={toDate} />
+			</label>
+			<button type="submit">Filter</button>
+			<button type="reset">Clear</button>
+		</form>
+	</details>
 </section>
 
 <section class="w-full my-4">
-	<details>
-		<summary>Stats</summary>
-		<div class="grid grid-cols-3 gap-2 w-full">
-			<div>
-				<h3>Expenses</h3>
-				<p>{formatIntegerToMoney(totalExpenses)}</p>
-			</div>
-			<div>
-				<h3>Incomes</h3>
-				<p>{formatIntegerToMoney(totalIncomes)}</p>
-			</div>
-			<div>
-				<h3>Balance</h3>
-				<p>{formatIntegerToMoney(balance)}</p>
-			</div>
-		</div>
-	</details>
+	<Stats {totalExpenses} {totalIncomes} {balance} />
 </section>
 
 <section>
@@ -116,18 +96,6 @@
 						<small>{entry.date}</small>
 					</div>
 					<p>{entry.description}</p>
-					{#if entry.categories}
-						<ul class="flex space-x-1 pt-1">
-							{#each entry.categories as category}
-								<li>
-									<small
-										class="bg-purple-100 text-purple-700 border border-purple-300 px-1 rounded-md block"
-										>{category.category.name}</small
-									>
-								</li>
-							{/each}
-						</ul>
-					{/if}
 				</li>
 			{/each}
 		</ul>
