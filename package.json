@@ -38,6 +38,7 @@
 	"dependencies": {
 		"@sveltejs/adapter-node": "^1.2.4",
 		"date-fns": "^2.30.0",
+		"fuse.js": "^6.6.2",
 		"zod": "^3.21.4"
 	}
 }
