@@ -11,6 +11,10 @@ function verifyFileOrPathIsWriteable(path: string) {
 }
 
 function startApp() {
+	if (!ENTRIES_FILE_PATH) {
+		throw new Error('Entries file path is not defined');
+	}
+
 	if (!verifyFileOrPathIsWriteable(ENTRIES_FILE_PATH)) {
 		throw new Error('Entries file is not writeable');
 	}
