@@ -2,8 +2,9 @@
 	import { page } from '$app/stores';
 	import { format } from 'date-fns';
 	import Stats from '../components/stats.svelte';
+	import type { Entry } from '../models/entry';
 
-	export let data;
+	export let data: { entries: Entry[] };
 	let message = $page.url.searchParams.get('message');
 	let fromDate = $page.url.searchParams.get('fromDate') || null;
 	let toDate = $page.url.searchParams.get('toDate') || null;
