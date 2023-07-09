@@ -50,6 +50,7 @@
 
 <section class="flex space-x-2 mb-4">
 	<a href="/entries/new">New entry</a>
+	<a href="/categories/new">New category</a>
 </section>
 
 <section id="filter">
