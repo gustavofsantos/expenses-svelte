@@ -9,8 +9,6 @@
 	let fromDate = $page.url.searchParams.get('fromDate') || null;
 	let toDate = $page.url.searchParams.get('toDate') || null;
 
-	$: console.log(data);
-
 	$: entries = data.entries.map((entry) => ({
 		...entry,
 		value: new Intl.NumberFormat('pt-BR', {
