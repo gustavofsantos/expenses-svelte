@@ -19,6 +19,10 @@ export class CategoriesService {
 		await this.categoriesRepository.deleteById(id);
 	}
 
+	async findById(id: string): Promise<Category | undefined> {
+		return this.categoriesRepository.findById(id);
+	}
+
 	async findAll(): Promise<Category[]> {
 		return this.categoriesRepository.findAll();
 	}

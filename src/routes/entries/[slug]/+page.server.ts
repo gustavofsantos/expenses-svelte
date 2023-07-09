@@ -1,4 +1,5 @@
-import { ENTRIES_FILE_PATH } from '$env/static/private';
+import { CATEGORIES_FILE_PATH, ENTRIES_FILE_PATH } from '$env/static/private';
+import { CategoriesRepository } from '$lib/categories-repository';
 import { EntriesService } from '$lib/entries-service';
 import { fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
@@ -12,13 +13,16 @@ const UpdateEntrySchema = z.object({
 });
 
 const entriesService = new EntriesService(ENTRIES_FILE_PATH);
+const categoriesRepo = new CategoriesRepository(CATEGORIES_FILE_PATH);
 
 export const load: PageServerLoad = async (event) => {
 	const entryId = event.params.slug;
 	const entry = await entriesService.findById(entryId);
 	if (!entry) throw fail(404);
 
-	return { entry: JSON.parse(JSON.stringify(entry)) };
+	const categories = await categoriesRepo.findAll();
+
+	return { entry: JSON.parse(JSON.stringify(entry)), categories };
 };
 
 export const actions: Actions = {
@@ -29,8 +33,6 @@ export const actions: Actions = {
 		const description = formData.get('description') as string;
 		const date = formData.get('date') ? new Date(formData.get('date') as string) : undefined;
 		const type = (formData.get('type') as string | undefined) || undefined;
-
-		console.log({ value, description, date, type });
 
 		const validation = UpdateEntrySchema.safeParse({
 			description,

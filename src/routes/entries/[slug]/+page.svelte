@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import Money from '$lib/components/money.svelte';
 	import { format } from 'date-fns';
 
 	export let form;
@@ -17,7 +18,11 @@
 	<title>Entry #{data.entry?.id}</title>
 </svelte:head>
 
-<h1>Entry #{data.entry?.id}</h1>
+<h1>
+	<Money {value} />
+</h1>
+
+<h3>#{data.entry?.id}</h3>
 
 <section>
 	<a href="/">Back to entries</a>

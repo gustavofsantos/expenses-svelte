@@ -24,7 +24,12 @@ export class CategoriesRepository {
 		await writeFile(this.categoriesFilePath, JSON.stringify({ categories: newCategories }));
 	}
 
-	async findAll() {
+	async findById(id: string): Promise<Category | undefined> {
+		const categories = await this.findAll();
+		return categories.find((category: Category) => category.id === id);
+	}
+
+	async findAll(): Promise<Category[]> {
 		await this.initFile();
 		const { categories } = await this.loadFile();
 		return categories;
