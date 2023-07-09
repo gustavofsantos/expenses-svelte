@@ -1,10 +1,13 @@
-<script lang="ts">
+<script>
 	import { enhance } from '$app/forms';
 	import Money from '$lib/components/money.svelte';
 	import { format } from 'date-fns';
 
-	export let form;
+	/** @type {import('./$types').PageData} */
 	export let data;
+
+	/** @type {import('./$types').ActionData} */
+	export let form;
 
 	let value = data.entry?.value;
 	let type = data.entry?.type?.toLowerCase();
@@ -71,3 +74,38 @@
 	<input type="hidden" name="id" value={data.entry?.id} />
 	<button type="submit" data-delete>Delete</button>
 </form>
+
+<br />
+
+<section>
+	<ul>
+		{#each data.categoriesOnEntry as category}
+			<li class="flex justify-between items-center">
+				<span>{category.name}</span>
+
+				<div>
+					<form method="POST" action="?/removecategory">
+						<input type="hidden" name="entryId" value={data.entry.id} />
+						<input type="hidden" name="categoryId" value={category.id} />
+						<button type="submit" class="!block bg-red-500 text-red-100">Remove</button>
+					</form>
+				</div>
+			</li>
+		{/each}
+	</ul>
+
+	<ul>
+		{#each data.categoriesNotOnEntry as category}
+			<li class="flex justify-between items-center">
+				<span>{category.name}</span>
+				<div>
+					<form method="POST" action="?/addcategory">
+						<input type="hidden" name="entryId" value={data.entry.id} />
+						<input type="hidden" name="categoryId" value={category.id} />
+						<button type="submit">Add</button>
+					</form>
+				</div>
+			</li>
+		{/each}
+	</ul>
+</section>

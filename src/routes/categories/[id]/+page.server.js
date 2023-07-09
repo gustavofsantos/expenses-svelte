@@ -20,15 +20,14 @@ export async function load({ params }) {
 	const category = await categoriesService.findById(id);
 	const categoriesAndEntries = await categoriesOnEntries.findByCategoryId(id);
 	const allEntries = await entriesService.loadAll();
-	console.log(categoriesAndEntries);
+	const entries = allEntries.filter((entry) =>
+		categoriesAndEntries.some((v) => v.entryId === entry.id)
+	);
 
 	if (!category) throw error(404, 'Category not found');
 
 	return {
 		category,
-		entries: allEntries
+		entries
 	};
 }
-
-/** @type {import('./$types').PageServerActions}*/
-export const actions = {};

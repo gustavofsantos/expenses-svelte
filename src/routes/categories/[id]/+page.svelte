@@ -1,4 +1,6 @@
 <script>
+	import Money from '$lib/components/money.svelte';
+
 	/** @type {import('./$types').PageData} */
 	export let data;
 </script>
@@ -11,7 +13,11 @@
 	<ul>
 		{#each data.entries as entry}
 			<li>
-				<p><strong>{entry.value}</strong>: {entry.description}</p>
+				<p>
+					<a href={`/entries/${entry.id}`}>
+						<strong><Money value={entry.value} /></strong>: {entry.description}
+					</a>
+				</p>
 			</li>
 		{/each}
 	</ul>

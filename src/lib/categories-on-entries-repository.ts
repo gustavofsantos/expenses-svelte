@@ -20,6 +20,43 @@ export class CategoriesOnEntriesRepository {
 		await writeFile(this.categoriesOnEntriesFilePath, JSON.stringify({ categoriesOnEntries }));
 	}
 
+	async remove(categoryId: string, entryId: string) {
+		const { categoriesOnEntries } = await this.loadFile();
+		const newCategoriesOnEntries = categoriesOnEntries.filter(
+			(categoryOnEntry: CategoryOnEntry) =>
+				categoryOnEntry.categoryId !== categoryId || categoryOnEntry.entryId !== entryId
+		);
+
+		await writeFile(
+			this.categoriesOnEntriesFilePath,
+			JSON.stringify({ categoriesOnEntries: newCategoriesOnEntries })
+		);
+	}
+
+	async removeAllByEntryId(entryId: string) {
+		const { categoriesOnEntries } = await this.loadFile();
+		const newCategoriesOnEntries = categoriesOnEntries.filter(
+			(categoryOnEntry: CategoryOnEntry) => categoryOnEntry.entryId !== entryId
+		);
+
+		await writeFile(
+			this.categoriesOnEntriesFilePath,
+			JSON.stringify({ categoriesOnEntries: newCategoriesOnEntries })
+		);
+	}
+
+	async removeAllByCategoryId(categoryId: string) {
+		const { categoriesOnEntries } = await this.loadFile();
+		const newCategoriesOnEntries = categoriesOnEntries.filter(
+			(categoryOnEntry: CategoryOnEntry) => categoryOnEntry.categoryId !== categoryId
+		);
+
+		await writeFile(
+			this.categoriesOnEntriesFilePath,
+			JSON.stringify({ categoriesOnEntries: newCategoriesOnEntries })
+		);
+	}
+
 	async findByCategoryId(categoryId: string) {
 		const categoriesOnEntries = await this.loadAll();
 		return categoriesOnEntries.filter(

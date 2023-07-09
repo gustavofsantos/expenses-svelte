@@ -1,4 +1,9 @@
-import { CATEGORIES_FILE_PATH, ENTRIES_FILE_PATH } from '$env/static/private';
+import {
+	CATEGORIES_FILE_PATH,
+	CATEGORIES_ON_FILES_PATH,
+	ENTRIES_FILE_PATH
+} from '$env/static/private';
+import { CategoriesOnEntriesRepository } from '$lib/categories-on-entries-repository';
 import { CategoriesRepository } from '$lib/categories-repository';
 import { EntriesService } from '$lib/entries-service';
 import { fail, redirect } from '@sveltejs/kit';
@@ -13,6 +18,7 @@ const UpdateEntrySchema = z.object({
 });
 
 const entriesService = new EntriesService(ENTRIES_FILE_PATH);
+const categoriesOnEntries = new CategoriesOnEntriesRepository(CATEGORIES_ON_FILES_PATH);
 const categoriesRepo = new CategoriesRepository(CATEGORIES_FILE_PATH);
 
 export const load: PageServerLoad = async (event) => {
@@ -20,9 +26,18 @@ export const load: PageServerLoad = async (event) => {
 	const entry = await entriesService.findById(entryId);
 	if (!entry) throw fail(404);
 
+	const categoriesAndEntries = await categoriesOnEntries.findByEntryId(entryId);
 	const categories = await categoriesRepo.findAll();
 
-	return { entry: JSON.parse(JSON.stringify(entry)), categories };
+	return {
+		entry: JSON.parse(JSON.stringify(entry)),
+		categoriesOnEntry: categories.filter((category) =>
+			categoriesAndEntries.some((v) => v.categoryId === category.id)
+		),
+		categoriesNotOnEntry: categories.filter(
+			(category) => !categoriesAndEntries.some((v) => v.categoryId === category.id)
+		)
+	};
 };
 
 export const actions: Actions = {
@@ -54,6 +69,25 @@ export const actions: Actions = {
 		await entriesService.update(entryId, validation.data);
 
 		throw redirect(302, `/`);
+	},
+	addcategory: async (event) => {
+		const formData = await event.request.formData();
+		const categoryId = formData.get('categoryId') as string;
+		const entryId = formData.get('entryId') as string;
+		const date = new Date();
+
+		await categoriesOnEntries.create({ categoryId, entryId, date });
+
+		throw redirect(302, `/entries/${entryId}`);
+	},
+	removecategory: async (event) => {
+		const formData = await event.request.formData();
+		const categoryId = formData.get('categoryId') as string;
+		const entryId = formData.get('entryId') as string;
+
+		await categoriesOnEntries.remove(categoryId, entryId);
+
+		throw redirect(302, `/entries/${entryId}`);
 	},
 	delete: async (event) => {
 		const entryId = event.params.slug;
