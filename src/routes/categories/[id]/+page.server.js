@@ -1,6 +1,6 @@
 import {
 	CATEGORIES_FILE_PATH,
-	CATEGORIES_ON_FILES_PATH,
+	CATEGORIES_ON_ENTRIES_PATH,
 	ENTRIES_FILE_PATH
 } from '$env/static/private';
 import { CategoriesOnEntriesRepository } from '$lib/categories-on-entries-repository';
@@ -11,7 +11,7 @@ import { error } from '@sveltejs/kit';
 
 const categoriesRepo = new CategoriesRepository(CATEGORIES_FILE_PATH);
 const categoriesService = new CategoriesService(categoriesRepo);
-const categoriesOnEntries = new CategoriesOnEntriesRepository(CATEGORIES_ON_FILES_PATH);
+const categoriesOnEntries = new CategoriesOnEntriesRepository(CATEGORIES_ON_ENTRIES_PATH);
 const entriesService = new EntriesService(ENTRIES_FILE_PATH);
 
 /** @type {import('./$types').PageServerLoad} */

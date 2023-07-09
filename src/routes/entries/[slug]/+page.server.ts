@@ -1,6 +1,6 @@
 import {
 	CATEGORIES_FILE_PATH,
-	CATEGORIES_ON_FILES_PATH,
+	CATEGORIES_ON_ENTRIES_PATH,
 	ENTRIES_FILE_PATH
 } from '$env/static/private';
 import { CategoriesOnEntriesRepository } from '$lib/categories-on-entries-repository';
@@ -18,7 +18,7 @@ const UpdateEntrySchema = z.object({
 });
 
 const entriesService = new EntriesService(ENTRIES_FILE_PATH);
-const categoriesOnEntries = new CategoriesOnEntriesRepository(CATEGORIES_ON_FILES_PATH);
+const categoriesOnEntries = new CategoriesOnEntriesRepository(CATEGORIES_ON_ENTRIES_PATH);
 const categoriesRepo = new CategoriesRepository(CATEGORIES_FILE_PATH);
 
 export const load: PageServerLoad = async (event) => {
