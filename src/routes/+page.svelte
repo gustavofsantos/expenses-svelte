@@ -9,6 +9,8 @@
 	let fromDate = $page.url.searchParams.get('fromDate') || null;
 	let toDate = $page.url.searchParams.get('toDate') || null;
 
+	$: console.log(data);
+
 	$: entries = data.entries.map((entry) => ({
 		...entry,
 		value: new Intl.NumberFormat('pt-BR', {
@@ -102,6 +104,15 @@
 						<small>{entry.date}</small>
 					</div>
 					<p>{entry.description}</p>
+					{#if entry.categories.length}
+						<ul class="flex space-x-2">
+							{#each entry.categories as category}
+								<li class="font-bold bg-purple-100 text-purple-700 px-2 rounded">
+									<small>{category.name}</small>
+								</li>
+							{/each}
+						</ul>
+					{/if}
 				</li>
 			{/each}
 		</ul>

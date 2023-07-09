@@ -22,6 +22,16 @@ export const load: PageServerLoad = async (event) => {
 		fromDate: fromDate ? new Date(fromDate) : undefined,
 		toDate: toDate ? new Date(toDate) : undefined
 	});
+	const categoriesAndEntries = await Promise.all(
+		entries.map((entry) => categoriesOnEntriesRepository.findByEntryId(entry.id))
+	);
+
+	for (let i = 0; i < entries.length; i++) {
+		const categories = await Promise.all(
+			categoriesAndEntries[i].map((c) => categoriesService.findById(c.categoryId))
+		);
+		entries[i].categories = categories;
+	}
 
 	return { entries };
 };
